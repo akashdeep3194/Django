@@ -14,10 +14,12 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
-from todo_test.views import index
+from django.urls import path, include
+from todo_test.views import index, Message
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('test/',index)
+    path('test/',index),
+    path('msg/',Message.as_view()),
+    path('todosv1/',include('todov1.urls'))
 ]
