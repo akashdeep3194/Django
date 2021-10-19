@@ -5,4 +5,4 @@ class Todos(models.Model):
     todo = models.TextField(verbose_name='Todos')
     addt = models.TextField(verbose_name="Additional data",null=True)
     created_date = models.DateField(auto_now=True)
-
+    created_by = models.TextField(verbose_name="Username")

@@ -7,19 +7,31 @@ from todov1.models.models import Todos
 class apiService():
 
     def get_fn(self,request,pk=0):
+        
+        user=request.user
 
         if pk != 0:
-            queryset = get_object_or_404(Todos,pk=pk)
+            queryset = get_object_or_404(Todos,pk=pk,created_by=user)
             serializer = TodosSerializer(queryset)
 
         else:
-            queryset = Todos.objects.all()
+            user = request.user
+            queryset = Todos.objects.filter(created_by = user)
             serializer = TodosSerializer(queryset,many = True)
             
         return Response(data=serializer.data, status = status.HTTP_200_OK)
 
     def post_fn(self,request):
-        serialized_payload = TodosSerializer(data=request.data,many=True)
+        user = request.user.username
+        if type(request.data) is list:
+            for ele in request.data:
+                ele['created_by'] = user
+            serialized_payload = TodosSerializer(data=request.data,many=True)
+
+        elif type(request.data) is dict:
+            request.data['created_by'] = user
+            serialized_payload = TodosSerializer(data=request.data)
+
         try:
             if serialized_payload.is_valid():
                 serialized_payload.save()
@@ -30,7 +42,8 @@ class apiService():
             return Response(serialized_payload.errors, status= status.HTTP_404_NOT_FOUND)
 
     def put_fn(self,request,pk):
-        queryset = get_object_or_404(Todos,pk=pk)
+        user = request.user
+        queryset = get_object_or_404(Todos,pk=pk,created_by = user)
         serializer = TodosSerializer(queryset, data=request.data)
         if serializer.is_valid():
             serializer.save()
@@ -39,6 +52,8 @@ class apiService():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def del_fn(self,request,pk):
-        queryset = get_object_or_404(Todos,pk = pk)
+        user = request.user
+        queryset = get_object_or_404(Todos,pk = pk,created_by = user)
         queryset.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(data="Deleted",status=status.HTTP_204_NO_CONTENT)
+

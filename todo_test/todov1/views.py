@@ -11,6 +11,7 @@ from todov1.serializers import TodosSerializer
 class myTodos(APIView):
 
     def get(self,request,pk=0):
+
         service = apiService()
         response = apiService.get_fn(self, request,pk)
         return response
@@ -34,7 +35,9 @@ class myTodos(APIView):
 class allTodos(APIView):
 
     def get(self,request):
+
         queryset = Todos.objects.all()
+
         if queryset.count() == 0:
             return Response(status=status.HTTP_204_NO_CONTENT)
         else:
@@ -42,7 +45,8 @@ class allTodos(APIView):
             return Response(data=serializer.data, status=status.HTTP_200_OK)
 
     def delete(self,request):
-        queryset = Todos.objects.all()
-        queryset.delete()
 
+        queryset = Todos.objects.all()
+
+        queryset.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
