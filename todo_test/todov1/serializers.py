@@ -1,5 +1,5 @@
 from rest_framework.serializers import ModelSerializer
-from todov1.models import Todos
+from todov1.models.models import Todos
 
 class TodosSerializer(ModelSerializer):
     class Meta:
