@@ -1,8 +1,9 @@
 from django.urls import path
-from todov1.views import myTodos, allTodos
+from todov1.views.todo_view import TodoView
+from todov1.views.all_todo_view import allTodos
 
 urlpatterns = [
-    path('todos/',myTodos.as_view(),name = "mytodos"),
-    path('todos/<int:pk>',myTodos.as_view(),name = "getTodoById"),
+    path('todos/',TodoView.as_view(),name = "TodoView"),
+    path('todos/<int:pk>',TodoView.as_view(),name = "getTodoById"),
     path('todos/all',allTodos.as_view(),name = "alltheTodos"),
 ]

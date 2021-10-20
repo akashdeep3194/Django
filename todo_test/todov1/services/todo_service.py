@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import status
 from todov1.models.models import Todos
 
-class apiService():
+class TodoService():#TodoService filename-todo_service
 
     def get_fn(self,request,pk=0):
         
