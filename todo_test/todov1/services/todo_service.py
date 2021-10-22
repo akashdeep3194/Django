@@ -1,12 +1,15 @@
+import typing
 from todov1.serializers.todos_serializer import TodosSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
 from todov1.models.todo_model import Todo
 from rest_framework import status
+from typing import List
 
 class TodoService():
 
-    def get_all_todo(self,user_id:int) -> "list[Todo]":
+    def get_all_todo(self,user_id:int) -> List[Todo]:
+
         queryset = Todo.objects.filter(user = user_id)
         serializer = TodosSerializer(queryset,many = True)
         return serializer.data
@@ -15,10 +18,9 @@ class TodoService():
     
         queryset = get_object_or_404(Todo,pk=pk,user=user_id)
         serializer = TodosSerializer(queryset)
-
         return serializer.data
 
-    def post_single_todo(self, payload:dict, user_id:int) -> Todo:
+    def create_todo(self, payload:dict, user_id:int) -> Todo:
 
 
         try:
@@ -35,6 +37,8 @@ class TodoService():
         return serialized_payload
 
     def post_multiple_todos(self,payload: list, user_id:int) -> Todo:
+        
+        
         try:
             for ele in payload:
                 ele['user'] = user_id
@@ -51,7 +55,7 @@ class TodoService():
 
 
 
-    def put_todo(self,payload,user_id:int ,pk:int):
+    def update_todo(self,payload,user_id:int ,pk:int):
 
         try:
             queryset = get_object_or_404(Todo,pk=pk, user = user_id)
@@ -66,8 +70,9 @@ class TodoService():
         return serializer
 
 
-    def del_todo(self,request,pk):
+    def delete_todo(self,request,pk):
         user_id = request.user.id
         queryset = get_object_or_404(Todo,pk = pk,user = user_id)
         queryset.delete()
+
 

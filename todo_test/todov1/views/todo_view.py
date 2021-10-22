@@ -31,7 +31,7 @@ class TodoView(APIView):
             response = self.todo_service.post_multiple_todos(payload, user_id)
 
         elif type(payload) is dict:
-            response = self.todo_service.post_single_todo(payload, user_id)
+            response = self.todo_service.create_todo(payload, user_id)
 
         if response.is_valid():
             return Response(data = response.data,status=status.HTTP_201_CREATED)
@@ -40,7 +40,7 @@ class TodoView(APIView):
 
     def put(self, request, pk): # do not use request inside service
 
-        response_serial = self.todo_service.put_todo(payload=request.data,user_id=request.user.id, pk=pk)
+        response_serial = self.todo_service.update_todo(payload=request.data,user_id=request.user.id, pk=pk)
 
         if response_serial.is_valid():
             response_serial.save()
@@ -50,6 +50,6 @@ class TodoView(APIView):
 
     def delete(self, request, pk):
 
-        self.todo_service.del_todo(request, pk)
+        self.todo_service.delete_todo(request, pk)
         return Response(data="Deleted",status=status.HTTP_204_NO_CONTENT)
 
