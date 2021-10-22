@@ -28,15 +28,12 @@ class TodoView(APIView):
         user_id = request.user.id
         print(type(payload))
         if type(payload) is list:
-            response = self.todo_service.post_multiple_todos(payload, user_id)
-
+            response = self.todo_service.create_multiple_todos(payload, user_id)
         elif type(payload) is dict:
             response = self.todo_service.create_todo(payload, user_id)
 
         if response.is_valid():
             return Response(data = response.data,status=status.HTTP_201_CREATED)
-        else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def put(self, request, pk): # do not use request inside service
 

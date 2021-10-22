@@ -8,3 +8,4 @@ class Todo(models.Model):
     addt = models.TextField(verbose_name="Additional data", null=True)
     created_date = models.DateField(auto_now=True)
     user = models.ForeignKey(User, verbose_name="Username", on_delete=DO_NOTHING) # donothing
+

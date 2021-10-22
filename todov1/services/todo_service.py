@@ -25,31 +25,29 @@ class TodoService():
 
         try:
             payload['user'] = user_id
-            print(payload)
             serialized_payload = TodosSerializer(data=payload)
             if serialized_payload.is_valid():
                 serialized_payload.save()
             else:
                 return Response(serialized_payload.errors, status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response(status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(e,status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return serialized_payload
 
-    def post_multiple_todos(self,payload: list, user_id:int) -> Todo:
-        
-        
-        try:
-            for ele in payload:
-                ele['user'] = user_id
-            serialized_payload = TodosSerializer(data=payload,many=True)
+    def create_multiple_todos(self,payload: list, user_id:int) -> Todo:
+            
+        for ele in payload:
+            ele['user'] = user_id
 
-            if not(serialized_payload.is_valid()):
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+        serialized_payload = TodosSerializer(data=payload,many=True)
+        print(serialized_payload)
 
-        except Exception as e:
-            return Response(serialized_payload.errors, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        if not(serialized_payload.is_valid()):
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        else:
+            serialized_payload.save()
+            print("Valid")
         return serialized_payload
 
 
