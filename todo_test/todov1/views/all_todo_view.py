@@ -4,7 +4,7 @@ from rest_framework import status
 from todov1.models.todo_model import Todo
 from todov1.services.todo_service import TodoService
 from rest_framework.response import Response
-from todov1.serializers import TodosSerializer
+from todov1.serializers.todos_serializer import TodosSerializer
 
 
 class allTodos(APIView):

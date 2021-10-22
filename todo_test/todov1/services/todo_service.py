@@ -1,49 +1,72 @@
-from todov1.serializers import TodosSerializer
+from todov1.serializers.todos_serializer import TodosSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
-from rest_framework import status
 from todov1.models.todo_model import Todo
+from rest_framework import status
 
 class TodoService():
 
-    def get_all_todo(self,request,pk=0):
-
-        user_id = request.user.id
-        
-        if pk != 0:
-            queryset = get_object_or_404(Todo,pk=pk,user=user_id)
-            serializer = TodosSerializer(queryset)
-        else:
-            queryset = Todo.objects.filter(user = user_id)
-            serializer = TodosSerializer(queryset,many = True)
+    def get_all_todo(self,user_id:int) -> list[Todo]:
+        queryset = Todo.objects.filter(user = user_id)
+        serializer = TodosSerializer(queryset,many = True)
         return serializer.data
 
-    def post_fn(self,request):
-        user_id = request.user.id
-        print(user_id)
-        print(request)
+    def get_todo_by_id(self,user_id:int,pk:int) -> Todo:
+    
+        queryset = get_object_or_404(Todo,pk=pk,user=user_id)
+        serializer = TodosSerializer(queryset)
 
-        if type(request.data) is list:
-            for ele in request.data:
+        return serializer.data
+
+    def post_single_todo(self, payload:dict, user_id:int) -> Todo:
+
+
+        try:
+            payload['user'] = user_id
+            print(payload)
+            serialized_payload = TodosSerializer(data=payload)
+            if serialized_payload.is_valid():
+                serialized_payload.save()
+            else:
+                return Response(serialized_payload.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+        return serialized_payload
+
+    def post_multiple_todos(self,payload: list, user_id:int) -> Todo:
+        try:
+            for ele in payload:
                 ele['user'] = user_id
-            serialized_payload = TodosSerializer(data=request.data,many=True)
+            serialized_payload = TodosSerializer(data=payload,many=True)
 
-        elif type(request.data) is dict:
-            request.data['user'] = user_id
-            serialized_payload = TodosSerializer(data=request.data)
+            if not(serialized_payload.is_valid()):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+
+        except Exception as e:
+            return Response(response.errors, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return serialized_payload
 
 
-    def put_fn(self,request,pk):
-        user_id = request.user.id
-        queryset = get_object_or_404(Todo,pk=pk, user = user_id)
-        request.data["user"] = queryset.user.id
-        serializer = TodosSerializer(queryset, data=request.data)
+
+
+    def put_todo(self,payload,user_id:int ,pk:int):
+
+        try:
+            queryset = get_object_or_404(Todo,pk=pk, user = user_id)
+            payload["user"] = queryset.user.id
+            serializer = TodosSerializer(queryset, data=request.data)
+            if not(serializer.is_valid()):
+                return Response(status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(e.errors, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+
         return serializer
 
 
-    def del_fn(self,request,pk):
+    def del_todo(self,request,pk):
         user_id = request.user.id
         queryset = get_object_or_404(Todo,pk = pk,user = user_id)
         queryset.delete()
