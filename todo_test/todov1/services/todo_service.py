@@ -6,7 +6,7 @@ from rest_framework import status
 
 class TodoService():
 
-    def get_all_todo(self,user_id:int) -> list[Todo]:
+    def get_all_todo(self,user_id:int) -> "list[Todo]":
         queryset = Todo.objects.filter(user = user_id)
         serializer = TodosSerializer(queryset,many = True)
         return serializer.data
@@ -44,7 +44,7 @@ class TodoService():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
 
         except Exception as e:
-            return Response(response.errors, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+            return Response(serialized_payload.errors, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
 
         return serialized_payload
 
@@ -56,7 +56,7 @@ class TodoService():
         try:
             queryset = get_object_or_404(Todo,pk=pk, user = user_id)
             payload["user"] = queryset.user.id
-            serializer = TodosSerializer(queryset, data=request.data)
+            serializer = TodosSerializer(queryset, data=payload)
             if not(serializer.is_valid()):
                 return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
