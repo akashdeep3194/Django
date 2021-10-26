@@ -37,10 +37,16 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework.authtoken',
     'rest_framework',
     'todov1',
-    'rest_framework.authtoken'
+
 ]
+
+REST_FRAMEWORK = {    
+    'DEFAULT_AUTHENTICATION_CLASSES':('rest_framework.authentication.TokenAuthentication',),
+    'DEFAULT_PERMISSION_CLASSES':('rest_framework.permissions.IsAuthenticated',),
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,7 +56,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'todov1.middlewares.my_middleware.test_middleware',
+    # 'todov1.middlewares.my_middleware.test_middleware',
+    'todov1.middlewares.exception_handling_middleware.exception_handler_middleware',
 ]
 
 ROOT_URLCONF = 'todo_test.urls'
@@ -72,11 +79,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'todo_test.wsgi.application'
-
-REST_FRAMEWORK = {    
-    'DEFAULT_AUTHENTICATION_CLASSES':('rest_framework.authentication.TokenAuthentication',),
-    'DEFAULT_PERMISSION_CLASSES':('rest_framework.permissions.IsAuthenticated',),
-}
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

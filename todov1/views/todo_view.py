@@ -1,3 +1,4 @@
+from logging import raiseExceptions
 from rest_framework.views import APIView
 from todov1.models.todo_model import Todo
 from todov1.services.todo_service import TodoService
@@ -13,6 +14,7 @@ class TodoView(APIView):
     todo_service = TodoService()
     
     def get(self, request, pk=0):
+        # raise Exception("Test Error")
         user_id = request.user.id
         if pk == 0:
             response = self.todo_service.get_all_todo(user_id)
