@@ -1,4 +1,5 @@
-import typing
+import logging
+from rest_framework.exceptions import ValidationError
 from todov1.serializers.todos_serializer import TodosSerializer
 from rest_framework.response import Response
 from django.shortcuts import get_object_or_404
@@ -7,6 +8,8 @@ from rest_framework import status
 from typing import List
 
 class TodoService():
+    
+    logger = logging.getLogger(__name__)
 
     def get_all_todo(self,user_id:int) -> List[Todo]:
 
@@ -23,15 +26,13 @@ class TodoService():
     def create_todo(self, payload:dict, user_id:int) -> Todo:
 
 
-        try:
-            payload['user'] = user_id
-            serialized_payload = TodosSerializer(data=payload)
-            if serialized_payload.is_valid():
-                serialized_payload.save()
-            else:
-                return Response(serialized_payload.errors, status=status.HTTP_400_BAD_REQUEST)
-        except Exception as e:
-            return Response(e,status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+        payload['user'] = user_id
+        serialized_payload = TodosSerializer(data=payload)
+        if serialized_payload.is_valid():
+            serialized_payload.save()
+        else:
+            raise ValidationError("Bad Request: "+str(serialized_payload.errors))
+            # return Response(serialized_payload.errors, status=status.HTTP_400_BAD_REQUEST)
 
         return serialized_payload
 
@@ -44,10 +45,10 @@ class TodoService():
         print(serialized_payload)
 
         if not(serialized_payload.is_valid()):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return ValidationError("Bad Request: "+str(serialized_payload.errors))
+            # return Response(status=status.HTTP_400_BAD_REQUEST)
         else:
             serialized_payload.save()
-            print("Valid")
         return serialized_payload
 
 
@@ -60,16 +61,18 @@ class TodoService():
             payload["user"] = queryset.user.id
             serializer = TodosSerializer(queryset, data=payload)
             if not(serializer.is_valid()):
-                return Response(status=status.HTTP_400_BAD_REQUEST)
+                raise ValidationError("Bad Request: "+str(serializer.errors))
+                # return Response(status=status.HTTP_400_BAD_REQUEST)
         except Exception as e:
-            return Response(e.errors, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
+            raise Exception("Something went wrong")
+            logger.error(e)
+            # return Response(e.errors, status = status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
         return serializer
 
 
-    def delete_todo(self,request,pk):
-        user_id = request.user.id
+    def delete_todo(self,user_id,pk):
         queryset = get_object_or_404(Todo,pk = pk,user = user_id)
         queryset.delete()
 

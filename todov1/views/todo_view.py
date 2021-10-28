@@ -49,6 +49,6 @@ class TodoView(APIView):
 
     def delete(self, request, pk):
 
-        self.todo_service.delete_todo(request, pk)
+        self.todo_service.delete_todo(request.user.id,pk)
         return Response(data="Deleted",status=status.HTTP_204_NO_CONTENT)
 
