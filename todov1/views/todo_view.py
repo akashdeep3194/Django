@@ -15,6 +15,7 @@ class TodoView(APIView):
     
     def get(self, request, pk=0):
         # raise Exception("Test Error")
+        # print("Y")
         user_id = request.user.id
         if pk == 0:
             response = self.todo_service.get_all_todo(user_id)
