@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from todov1.serializers.todos_serializer import TodosSerializer
 from rest_framework import status
 from rest_framework.permissions import AllowAny
+from rest_framework.authtoken.models import Token
 
 # Create your views here.
 
@@ -34,7 +35,9 @@ class RegisterView(APIView):
                 # print(type(user))
                 # print("!!!!!!!!!!A")
                 # print(created)
-                return Response(data = {'username':user.username},status=status.HTTP_201_CREATED)
+
+                token, created = Token.objects.get_or_create(user=user)
+                return Response(data = {'username':user.username,'token':token.key},status=status.HTTP_201_CREATED)
             else:
                 return Response(data="User exists already",status=status.HTTP_409_CONFLICT)
 
