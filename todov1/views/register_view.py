@@ -22,7 +22,8 @@ class RegisterView(APIView):
 
         username = payload['username']
         password = payload['password']
-
+        if password == "":
+            return Response(data="Password cannot be blank", status=status.HTTP_400_BAD_REQUEST)
         try:
             user, created = User.objects.get_or_create(username=username)
 
