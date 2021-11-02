@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-5+#%yoi39r&j_gf3xer5-3r0js#!t%$1)5b!w(cf1nh^sgg-_+
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    'akashtodotest.azurewebsites.net',
     'akashtodo.azurewebsites.net',
     'localhost',
     '127.0.0.1'

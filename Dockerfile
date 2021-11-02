@@ -6,6 +6,8 @@ FROM python:3.6
 # to the terminal with out buffering it first
 ENV PYTHONUNBUFFERED 1
 
+ENV UWSGI_INI uwsgi.ini
+
 # create root directory for our project in the container
 RUN mkdir /todo_project
 
@@ -17,3 +19,5 @@ ADD . /todo_project/
 
 # Install any needed packages specified in requirements.txt
 RUN pip install -r requirements.txt
+
+CMD ["python3", "manage.py", "runserver", "0.0.0.0:8000", "--noreload"]
