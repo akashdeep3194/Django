@@ -1,0 +1,46 @@
+pipeline {
+    agent any
+
+    environment {
+        registryName = "todotest"
+        registryCredential = 'akashACRtest'
+        registryUrl = 'todoappapi.azurecr.io'
+        majorVersion = '1'
+        minorVersion = '0'
+        buildVersion = '${majorVersion}'+'.'+'${minorVersion}'+'.'+'${BUILD_NUMBER}'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/develop']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/akashdeep3194/Django.git']]])
+
+            }
+        }
+        stage('Build Docker image'){
+            steps {
+                echo "${buildVersion}"
+                script {
+                    dockerImage = docker.build registryName+":${buildVersion}"
+                }
+            }
+        }
+        stage('Upload Image to ACR') {
+            steps{
+                script {
+                    docker.withRegistry( "https://${registryUrl}", registryCredential) {
+                        dockerImage.push()
+                    }
+                }
+            }
+        }
+        stage('Deploy Image to Webapp') {
+            steps{
+                echo "${buildVersion}"
+                script {
+                    azureCLI commands: [[exportVariablesString: '', script: 'az webapp config container set --docker-custom-image-name todotest:1.0.${BUILD_NUMBER} --docker-registry-server-password wF5qeoG=r2KemOM02Zsr5S4MritdLq9E --docker-registry-server-url https://todoappapi.azurecr.io --name akashtodotest --resource-group akash_test']], principalCredentialId: 'akashtestserviceprincipal'
+                    }
+                }
+            }
+    }
+}
